@@ -7,7 +7,7 @@ class LinesPainter extends CustomPainter {
     final center = Offset(size.width * 1, size.height * 0.4); // ripple origin
     final paint =
         Paint()
-          ..color = Colors.white
+          ..color = Color.fromRGBO(255, 255, 255, 0.275)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1;
 
