@@ -15,24 +15,20 @@ class _HomeState extends State<Home> {
   int _activeIndex = 1;
 
   final _iconList = <Widget>[
-    Icon(Icons.home, color: Colors.white),
-    Icon(Icons.chat, color: Colors.white),
-    Icon(Icons.man, color: Colors.white),
+    Image.asset('assets/icons/home/tips.gif', height: 40, width: 40),
+    Image.asset('assets/icons/home/chat.gif', height: 40, width: 40),
+    Image.asset('assets/icons/home/profile.gif', height: 40, width: 40),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true, // Important for glowing backgrounds and shadows
-      body: Stack(
-        children: [
-          BackgroundUi.customBgUi(), // 💫 Custom background layer
-        ],
-      ),
+      body: Stack(children: [BackgroundUi.customBgUi()]),
       bottomNavigationBar: CurvedNavigationBar(
-        color: green,
-        backgroundColor: transparentFade,
-        buttonBackgroundColor: Colors.amberAccent,
+        color: Color.fromARGB(255, 200, 255, 217),
+        backgroundColor: Colors.transparent,
+        buttonBackgroundColor: Colors.transparent,
         height: 50,
         items: _iconList,
       ),

@@ -4,7 +4,7 @@ import 'package:my_doctor_buddy/common/presentations/lines_painter.dart';
 class BackgroundUi {
   static Widget customBgUi() {
     return Opacity(
-      opacity: .7,
+      opacity: .6,
       child: Stack(
         children: [
           // 🌊 Radial background glow
@@ -68,6 +68,26 @@ class BackgroundUi {
             child: Container(
               width: 300,
               height: 300,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: .5,
+                  colors: [
+                    Color(0xFF9EFFC1), // neon mint glow
+                    Color(0x000A0A23), // transparent fade to match background
+                  ],
+                  stops: [0.0, 1.0],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -200,
+            right: 0,
+            child: Container(
+              width: 800,
+              height: 800,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
