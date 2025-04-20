@@ -23,6 +23,8 @@ class OnboardingScreen extends StatelessWidget {
           SafeArea(
             child: PageView(
               controller: onboardingController.pageController,
+              onPageChanged:
+                  (value) => onboardingController.updateCurrentPage(value),
               children: [
                 OnboardingWidgets.customPage(
                   imgUrl: "assets/illustrations/1.png",
@@ -32,15 +34,15 @@ class OnboardingScreen extends StatelessWidget {
                 ),
                 OnboardingWidgets.customPage(
                   imgUrl: "assets/illustrations/2.png",
-                  heading: " Welcome to Your Health Companion",
+                  heading: "Your Health, Simplified",
                   subHeading:
-                      "Track your health, manage records, and stay informed—all in one place.​",
+                      " Access medical records, receive personalized insights, and schedule appointments effortlessly.​​",
                 ),
                 OnboardingWidgets.customPage(
                   imgUrl: "assets/illustrations/3.png",
-                  heading: " Welcome to Your Health Companion",
+                  heading: " Ready to Take Control?",
                   subHeading:
-                      "Track your health, manage records, and stay informed—all in one place.​",
+                      " Let's set up your profile and begin your journey to better health.​​",
                 ),
               ],
             ),
@@ -54,6 +56,7 @@ class OnboardingScreen extends StatelessWidget {
           children: [
             SmoothPageIndicator(
               controller: onboardingController.pageController,
+
               count: 3,
               effect: JumpingDotEffect(
                 activeDotColor: green,
@@ -62,25 +65,36 @@ class OnboardingScreen extends StatelessWidget {
                 spacing: 4,
                 dotColor: const Color.fromRGBO(225, 225, 225, 1),
               ),
-              onDotClicked:
-                  (index) => onboardingController.pageController.animateToPage(
-                    index,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
-                  ),
-            ),
-            SizedBox(height: 5.h),
-
-            CommonWidgets.customButton(
-              ontap: () {
-                log("next pressed");
-                onboardingController.pageController.nextPage(
+              onDotClicked: (index) {
+                log(index.toString());
+                onboardingController.pageController.animateToPage(
+                  index,
                   duration: Duration(milliseconds: 500),
-                  curve: Curves.easeInCirc,
+                  curve: Curves.easeInOut,
                 );
               },
-              title: "Next",
             ),
+            SizedBox(height: 5.h),
+            Obx(() {
+              return CommonWidgets.customButton(
+                ontap: () {
+                  if (onboardingController.currentPage.value != 2) {
+                    onboardingController.pageController.nextPage(
+                      duration: Duration(milliseconds: 800),
+                      curve: Curves.easeInOut,
+                    );
+
+                    log(
+                      "next pressed ${onboardingController.currentPage.value} ",
+                    );
+                  }
+                },
+                title:
+                    onboardingController.currentPage.value != 2
+                        ? "Next"
+                        : "Continue",
+              );
+            }),
           ],
         ),
       ),

@@ -29,8 +29,8 @@ class CommonWidgets {
           title,
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 15.sp,
+            fontWeight: FontWeight.w900,
+            fontSize: 16.sp,
           ),
         ),
       ),
