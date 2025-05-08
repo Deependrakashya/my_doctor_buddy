@@ -1,9 +1,22 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_doctor_buddy/auth/presentation/auth_screen.dart';
+import 'package:my_doctor_buddy/core/services/onboarding_service.dart';
+import 'package:my_doctor_buddy/home.dart';
 import 'package:my_doctor_buddy/onboarding/presentation/onboarding_screen.dart';
 import 'package:sizer/sizer.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final isOnboardingCompleted =
+      await OnboardingService().isOnboardingCompleted();
+  await Firebase.initializeApp();
+  log(" firebase auth ${FirebaseAuth.instance.currentUser}");
+
   runApp(
     Sizer(
       builder: (context, orientation, deviceType) {
@@ -21,7 +34,12 @@ void main() {
             ),
           ),
           debugShowCheckedModeBanner: false,
-          home: OnboardingScreen(),
+          home:
+              isOnboardingCompleted
+                  ? FirebaseAuth.instance.currentUser == null
+                      ? AuthScreen()
+                      : Home()
+                  : OnboardingScreen(),
         );
       },
     ),

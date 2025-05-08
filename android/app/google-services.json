@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "437262494621",
+    "project_id": "mydoctorbuddy",
+    "storage_bucket": "mydoctorbuddy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437262494621:android:8e5ae174ee5794c5a75d74",
+        "android_client_info": {
+          "package_name": "com.deepu.my_doctor_buddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "437262494621-lethcq9lk4309vtvptc300dblj40hmv7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deepu.my_doctor_buddy",
+            "certificate_hash": "fbc395aa613216ee20ec47ff9bde340e2ec07cc7"
+          }
+        },
+        {
+          "client_id": "437262494621-73u76n41id6o3q0mvtqmse8l2ve25uni.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6oEly7Y4w6qY_vDZG3OmSJZifqYPs6N4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "437262494621-73u76n41id6o3q0mvtqmse8l2ve25uni.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

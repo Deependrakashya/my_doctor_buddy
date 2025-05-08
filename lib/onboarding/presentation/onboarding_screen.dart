@@ -2,9 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:my_doctor_buddy/auth/presentation/auth_screen.dart';
 import 'package:my_doctor_buddy/common/presentations/background_ui.dart';
 import 'package:my_doctor_buddy/common/widgets/common_widgets.dart';
 import 'package:my_doctor_buddy/core/const_colors.dart';
+import 'package:my_doctor_buddy/core/services/onboarding_service.dart';
+import 'package:my_doctor_buddy/home.dart';
 import 'package:my_doctor_buddy/onboarding/domain/controller/onboarding_controller.dart';
 import 'package:my_doctor_buddy/onboarding/presentation/onboarding_widgets.dart';
 import 'package:sizer/sizer.dart';
@@ -77,16 +80,26 @@ class OnboardingScreen extends StatelessWidget {
             SizedBox(height: 5.h),
             Obx(() {
               return CommonWidgets.customButton(
-                ontap: () {
+                ontap: () async {
                   if (onboardingController.currentPage.value != 2) {
                     onboardingController.pageController.nextPage(
                       duration: Duration(milliseconds: 800),
                       curve: Curves.easeInOut,
                     );
-
-                    log(
-                      "next pressed ${onboardingController.currentPage.value} ",
-                    );
+                  }
+                  if (onboardingController.currentPage.value >= 2) {
+                    OnboardingService().completeOnboarding();
+                    final isOnboardingCompleted =
+                        await OnboardingService().isOnboardingCompleted();
+                    log('set true onboarding');
+                    isOnboardingCompleted
+                        ? Get.offAll(
+                          AuthScreen(),
+                          transition: Transition.fadeIn,
+                          duration: Duration(seconds: 1),
+                          curve: Curves.easeIn,
+                        )
+                        : null;
                   }
                 },
                 title:
