@@ -5,12 +5,17 @@ class CommonWidgets {
   static customButton({
     required VoidCallback ontap,
     required String title,
+    double? maxHeight,
+    double? maxWidth,
     double? margin,
   }) {
     return GestureDetector(
       onTap: ontap,
       child: Container(
-        constraints: BoxConstraints(maxHeight: 7.h, maxWidth: 90.w),
+        constraints: BoxConstraints(
+          maxHeight: maxHeight?.h ?? 7.h,
+          maxWidth: maxWidth?.w ?? 90.w,
+        ),
         margin: EdgeInsets.symmetric(vertical: margin ?? 2.h),
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         decoration: BoxDecoration(

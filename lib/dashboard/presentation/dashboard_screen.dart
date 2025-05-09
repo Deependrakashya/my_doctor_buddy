@@ -71,13 +71,15 @@ class DashboardScreen extends StatelessWidget {
                             icon: Icons.email_sharp,
                             text: AccountService.currentUserEmail,
                           ),
-                          DashoardWidgets.customTiles(
-                            icon: CupertinoIcons.arrow_right,
-                            text: "Switch to Google Sign-Up",
-                            func: () {
-                              dashboardController.switchToGoogleSignUp();
-                            },
-                          ),
+                          if (AccountService.currentUserName == 'Anonymous')
+                            DashoardWidgets.customTiles(
+                              icon: CupertinoIcons.arrow_right,
+                              text: "Switch to Google Sign-Up",
+                              func: () {
+                                dashboardController.switchToGoogleSignUp();
+                              },
+                            ),
+
                           DashoardWidgets.customTiles(
                             icon: Icons.logout,
                             text: "log Out",

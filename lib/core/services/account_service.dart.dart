@@ -17,7 +17,4 @@ class AccountService {
     final email = FirebaseAuth.instance.currentUser?.email;
     return (email != null && email.isNotEmpty) ? email : "Anonymous";
   }
-
-  static bool isAnonymous =
-      FirebaseAuth.instance.currentUser?.isAnonymous ?? false;
 }

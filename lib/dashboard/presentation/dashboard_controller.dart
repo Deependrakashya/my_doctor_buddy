@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_doctor_buddy/core/const_colors.dart';
+import 'package:my_doctor_buddy/core/services/account_service.dart.dart';
 import 'package:my_doctor_buddy/core/services/google_auth.dart';
 import 'package:my_doctor_buddy/core/services/onboarding_service.dart';
 import 'package:my_doctor_buddy/onboarding/presentation/onboarding_screen.dart';
