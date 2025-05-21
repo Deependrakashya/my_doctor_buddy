@@ -1,11 +1,14 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_doctor_buddy/common/presentations/background_ui.dart';
+import 'package:my_doctor_buddy/common/presentations/bg_ui_without_cirucles.dart';
 import 'package:my_doctor_buddy/core/const_colors.dart';
+import 'package:my_doctor_buddy/core/services/account_service.dart.dart';
 import 'package:my_doctor_buddy/core/services/google_auth.dart';
 import 'package:my_doctor_buddy/core/services/onboarding_service.dart';
 import 'package:my_doctor_buddy/dashboard/presentation/dashboard_screen.dart';
-import 'package:my_doctor_buddy/doctor_buddy/presentation/doctor_buddy.dart';
+import 'package:my_doctor_buddy/doctor_buddy/presentation/doctor_buddy_screen.dart';
 import 'package:my_doctor_buddy/onboarding/presentation/onboarding_screen.dart';
 import 'package:my_doctor_buddy/tips_&_feed/presentation/tips_feed_screen.dart';
 import 'package:sizer/sizer.dart';
@@ -18,7 +21,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _activeIndex = 2;
+  int _activeIndex = 1;
 
   final _iconList = <Widget>[
     Image.asset('assets/icons/home/tips.gif', height: 40, width: 40),
@@ -36,7 +39,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       extendBody: true, // Important for glowing backgrounds and shadows
       body: Stack(
-        children: [BackgroundUi.customBgUi(), _screenList[_activeIndex]],
+        children: [
+          AccountService.currentUserName.isNotEmpty
+              ? BgUiWithoutCirucles()
+              : BackgroundUi.customBgUi(),
+          _screenList[_activeIndex],
+        ],
       ),
       bottomNavigationBar: CurvedNavigationBar(
         color: Color.fromARGB(255, 200, 255, 217),

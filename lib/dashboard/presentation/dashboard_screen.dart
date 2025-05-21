@@ -15,7 +15,9 @@ import 'package:sizer/sizer.dart';
 
 class DashboardScreen extends StatelessWidget {
   DashboardScreen({super.key});
-  final DashboardController dashboardController = DashboardController();
+  final DashboardController dashboardController = Get.put(
+    DashboardController(),
+  );
 
   @override
   Widget build(BuildContext context) {

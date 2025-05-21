@@ -4,31 +4,27 @@ import 'package:flutter/material.dart';
 class LinesPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width * 1, size.height * 0.4); // ripple origin
+    final center = Offset(size.width * 0.8, size.height * 0.5);
     final paint =
         Paint()
-          ..color = Color.fromRGBO(255, 255, 255, 0.418)
+          ..color = const Color.fromRGBO(173, 255, 255, .3)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1;
 
-    const int rippleCount = 20;
+    const int rippleCount = 36;
     const double rippleGap = 40;
     final random = Random();
 
     for (int i = 1; i <= rippleCount; i++) {
       final radius = i * rippleGap;
       final path = Path();
-
       Offset? previousPoint;
 
-      for (double angle = 0; angle <= 2 * pi; angle += 0.15) {
-        // Dynamic wiggle based on angle and ripple index
-        final curveStrength = sin(angle * 3) * 20; // increase to make more wavy
-        final wiggle = sin(angle * 4 + i) * curveStrength;
+      for (double angle = 0; angle <= 2 * pi + 0.2; angle += 0.1) {
+        // Controlled wave distortion
+        final wiggle = sin(angle * 3 + i) * 10;
 
-        // Radius with wiggle
         final distortedRadius = radius + wiggle;
-
         final x = center.dx + distortedRadius * cos(angle);
         final y = center.dy + distortedRadius * sin(angle);
         final currentPoint = Offset(x, y);
@@ -36,18 +32,11 @@ class LinesPainter extends CustomPainter {
         if (angle == 0) {
           path.moveTo(x, y);
         } else {
-          // Decide randomly whether to make a corner or a curve
-          if (random.nextBool() && previousPoint != null) {
-            // Slight corner
-            path.lineTo(x, y);
-          } else if (previousPoint != null) {
-            // Smooth curve using quadratic Bezier
-            final controlPoint = Offset(
-              (previousPoint.dx + currentPoint.dx) / 2,
-              (previousPoint.dy + currentPoint.dy) / 2,
-            );
-            path.quadraticBezierTo(controlPoint.dx, controlPoint.dy, x, y);
-          }
+          final cp = Offset(
+            (previousPoint!.dx + currentPoint.dx) / 2,
+            (previousPoint.dy + currentPoint.dy) / 2,
+          );
+          path.quadraticBezierTo(cp.dx, cp.dy, x, y);
         }
 
         previousPoint = currentPoint;
