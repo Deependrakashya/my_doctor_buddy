@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:my_doctor_buddy/auth/presentation/auth_screen.dart';
 import 'package:my_doctor_buddy/common/presentations/background_ui.dart';
@@ -81,6 +82,7 @@ class OnboardingScreen extends StatelessWidget {
             Obx(() {
               return CommonWidgets.customButton(
                 ontap: () async {
+                  HapticFeedback.lightImpact();
                   if (onboardingController.currentPage.value != 2) {
                     onboardingController.pageController.nextPage(
                       duration: Duration(milliseconds: 800),

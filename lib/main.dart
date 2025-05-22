@@ -24,13 +24,22 @@ void main() async {
           theme: ThemeData(
             useMaterial3: true,
             fontFamily: "Albert_Sans",
+
             textTheme: TextTheme(bodyMedium: TextStyle(color: Colors.white)),
             scaffoldBackgroundColor: Colors.transparent,
+
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
               backgroundColor: Colors.transparent,
             ),
             bottomSheetTheme: BottomSheetThemeData(
               backgroundColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(color: Colors.transparent, width: 1),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25.sp),
+                  topRight: Radius.circular(25.sp),
+                ),
+              ),
             ),
           ),
           debugShowCheckedModeBanner: false,

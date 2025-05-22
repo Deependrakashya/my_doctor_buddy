@@ -12,9 +12,9 @@ class BgUiWithoutCirucles extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color.fromARGB(255, 47, 77, 53),
-            Color.fromARGB(133, 45, 64, 106),
-            Color.fromARGB(255, 138, 108, 183),
+            Color.fromARGB(255, 37, 140, 56),
+            Color.fromARGB(197, 0, 0, 0),
+            Color.fromARGB(210, 3, 8, 136),
           ],
         ),
       ),

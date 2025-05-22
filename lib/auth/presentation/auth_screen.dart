@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:my_doctor_buddy/common/presentations/background_ui.dart';
 import 'package:my_doctor_buddy/common/widgets/common_widgets.dart';
@@ -94,78 +95,85 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         bottomSheet:
             isAnonymousTapped
-                ? Center(
-                  child: AlertDialog.adaptive(
-                    backgroundColor: const Color.fromARGB(237, 0, 0, 0),
+                ? AlertDialog(
+                  title: const Text("Attention!!"),
+                  titleTextStyle: TextStyle(
+                    color: Colors.redAccent,
+                    fontSize: 22.sp,
+                  ),
+                  content: Text(
+                    "You’re signing in as a guest. Your data will be temporarily saved on this device. To secure your account and sync across devices, we recommend creating a full account later.",
+                  ),
+                  contentTextStyle: TextStyle(
+                    color: const Color.fromARGB(255, 227, 185, 13),
+                  ),
 
-                    content: Container(
-                      height: 50.h,
-
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(height: 10.h),
-                          Text(
-                            textAlign: TextAlign.center,
-                            "You’re signing in as a guest. Your data will be temporarily saved on this device. To secure your account and sync across devices, we recommend creating a full account later.",
-
-                            style: TextStyle(
-                              color: const Color.fromARGB(255, 244, 155, 54),
-                              fontSize: 15.sp,
-
-                              fontWeight: FontWeight.normal,
+                  actions: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            elevation: WidgetStatePropertyAll(3),
+                            backgroundColor: WidgetStatePropertyAll(
+                              Colors.grey,
                             ),
                           ),
-                          SizedBox(height: 30),
+                          onPressed: () async {
+                            setState(() {
+                              isAnonymousTapped = false;
+                            });
+                          },
 
-                          Column(
-                            children: [
-                              CommonWidgets.customButton(
-                                ontap: () async {
-                                  setState(() {
-                                    isAnonymousTapped = false;
-                                  });
-                                },
-                                margin: 5,
-                                maxHeight: 5,
-                                title: "Cancle",
-                              ),
-                              CommonWidgets.customButton(
-                                ontap: () async {
-                                  setState(() {
-                                    isloading = true;
-                                    isAnonymousTapped = false;
-                                  });
-
-                                  final userCred =
-                                      await AuthService().anonymousLogin();
-                                  if (userCred != null) {
-                                    setState(() {
-                                      isloading = false;
-                                      isAnonymousTapped = false;
-                                    });
-                                    print(
-                                      "Logged in as ${userCred.user?.toString()}",
-                                    );
-                                    Get.offAll(Home());
-                                  } else {
-                                    setState(() {
-                                      isloading = false;
-                                    });
-                                    print("Anonymous login canceled or failed");
-                                  }
-                                },
-                                title: "Continue",
-                                maxHeight: 5,
-
-                                margin: 0,
-                              ),
-                            ],
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: 5),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            shadowColor: WidgetStatePropertyAll(Colors.black),
+                            elevation: WidgetStatePropertyAll(5),
+                          ),
+                          onPressed: () async {
+                            setState(() {
+                              isloading = true;
+                              isAnonymousTapped = false;
+                            });
+
+                            final userCred =
+                                await AuthService().anonymousLogin();
+                            if (userCred != null) {
+                              setState(() {
+                                isloading = false;
+                                isAnonymousTapped = false;
+                              });
+                              print(
+                                "Logged in as ${userCred.user?.toString()}",
+                              );
+                              Get.offAll(Home());
+                            } else {
+                              setState(() {
+                                isloading = false;
+                              });
+                              print("Anonymous login canceled or failed");
+                            }
+                          },
+                          child: const Text(
+                            "Continue",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 )
                 : Container(
                   constraints: BoxConstraints(maxHeight: 20.h),
@@ -173,6 +181,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     children: [
                       CommonWidgets.customButton(
                         ontap: () async {
+                          HapticFeedback.mediumImpact();
                           setState(() {
                             isloading = true;
                           });
@@ -196,6 +205,8 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       CommonWidgets.customButton(
                         ontap: () async {
+                          HapticFeedback.mediumImpact();
+
                           setState(() {
                             isAnonymousTapped = true;
                           });

@@ -7,7 +7,7 @@ class LinesPainter extends CustomPainter {
     final center = Offset(size.width * 0.8, size.height * 0.5);
     final paint =
         Paint()
-          ..color = const Color.fromRGBO(173, 255, 255, .3)
+          ..color = const Color.fromARGB(108, 255, 255, 255)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1;
 
