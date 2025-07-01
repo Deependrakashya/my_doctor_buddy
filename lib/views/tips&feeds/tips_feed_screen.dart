@@ -5,6 +5,6 @@ class TipsFeedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Container(color: Colors.amber, height: 300));
+    return Scaffold(body: Container(height: 300));
   }
 }

@@ -3,15 +3,141 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:my_doctor_buddy/model/q_n_a_model.dart';
+import 'package:my_doctor_buddy/services/bot_services.dart';
+import 'package:my_doctor_buddy/services/firestore_services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 class ChatController extends GetxController {
   late CameraController cameraController;
   List<CameraDescription> cameras = [];
-  File? selectedImage;
+  TextEditingController queryController = TextEditingController();
+  RxList<Content> chatHistory = <Content>[].obs;
+  RxBool isStopGenerating = false.obs;
+  ScrollController scrollController = ScrollController();
+  FirestoreServices _firestoreServices = FirestoreServices();
+  Rx<File?> selectedImage = Rx<File?>(null);
+
+  // AIChatSession aiChatSession = AIChatSession();
+
+  final aiChatSession = AIChatSession();
+  @override
+  void onInit() {
+    super.onInit();
+
+    ever(chatHistory, (_) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (scrollController.hasClients) {
+          scrollController.animateTo(
+            scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    });
+  }
+
+  sendMessage() async {
+    final userMessage = queryController.text.trim();
+    if (userMessage.isEmpty) return;
+
+    // Add user message to chat history
+    if (selectedImage.value != null) {
+      final bytes = await selectedImage!.value?.readAsBytes();
+      chatHistory.add(
+        Content.multi([DataPart('image/jpeg', bytes!), TextPart(userMessage)]),
+      );
+    } else {
+      chatHistory.add(Content.text(userMessage));
+    }
+
+    // Clear input
+    queryController.clear();
+    isStopGenerating.value = true;
+    // Start streaming AI response
+    final responseStream = aiChatSession.sendMessageStream(
+      userMessage,
+      imageUrl: selectedImage?.value?.path,
+    );
+    // 💥 Hide keyboard
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    selectedImage.value = null;
+    // Track response chunks
+    String botResponse = "";
+
+    responseStream.listen(
+      (chunk) {
+        log("AI replied chunk: $chunk");
+
+        // Append chunk to final message
+        botResponse += chunk;
+
+        // Optional: Update live typing indicator (if UI supports)
+      },
+      onDone: () {
+        // Final AI message pushed to chat history
+        if (botResponse.isNotEmpty) {
+          _firestoreServices.saveQnA(
+            question: userMessage,
+            answer: botResponse,
+          );
+          // _firestoreServices.fetchUserQnAs();
+          chatHistory.add(Content.model([TextPart(botResponse)]));
+        }
+        isStopGenerating.value = false;
+      },
+      onError: (e) {
+        log("Error in AI stream: $e");
+        chatHistory.add(
+          Content.model([TextPart("⚠️ Error. Please try again.")]),
+        );
+        isStopGenerating.value = false;
+      },
+    );
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
 
   /// Opens native camera and captures image
   Future<void> openCamera() async {
@@ -22,7 +148,7 @@ class ChatController extends GetxController {
         source: ImageSource.camera,
       );
       if (pickedFile != null) {
-        selectedImage = File(pickedFile.path);
+        selectedImage.value = File(pickedFile.path);
         log("Captured Image: $selectedImage");
       } else {
         log("Camera capture cancelled");
@@ -72,8 +198,9 @@ class ChatController extends GetxController {
 
       final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (picked != null) {
-        selectedImage = File(picked.path);
+        selectedImage.value = File(picked.path);
         log("Selected Image: $selectedImage");
+        update();
       } else {
         log("Image selection cancelled");
       }

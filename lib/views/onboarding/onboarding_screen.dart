@@ -3,14 +3,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:my_doctor_buddy/auth/presentation/auth_screen.dart';
-import 'package:my_doctor_buddy/common/presentations/background_ui.dart';
+import 'package:my_doctor_buddy/views/auth/auth_screen.dart';
+import 'package:my_doctor_buddy/common/screens/background_ui.dart';
 import 'package:my_doctor_buddy/common/widgets/common_widgets.dart';
 import 'package:my_doctor_buddy/core/const_colors.dart';
-import 'package:my_doctor_buddy/core/services/onboarding_service.dart';
-import 'package:my_doctor_buddy/home.dart';
-import 'package:my_doctor_buddy/onboarding/domain/controller/onboarding_controller.dart';
-import 'package:my_doctor_buddy/onboarding/presentation/onboarding_widgets.dart';
+import 'package:my_doctor_buddy/services/onboarding_service.dart';
+import 'package:my_doctor_buddy/views/home.dart';
+import 'package:my_doctor_buddy/viewModel/onboarding_controller.dart';
+import 'package:my_doctor_buddy/views/onboarding/onboarding_widgets.dart';
 import 'package:sizer/sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -73,8 +73,8 @@ class OnboardingScreen extends StatelessWidget {
                 log(index.toString());
                 onboardingController.pageController.animateToPage(
                   index,
-                  duration: Duration(milliseconds: 500),
-                  curve: Curves.easeInOut,
+                  duration: Duration(milliseconds: 200),
+                  curve: Curves.linear,
                 );
               },
             ),

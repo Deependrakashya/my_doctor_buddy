@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:my_doctor_buddy/common/presentations/background_ui.dart';
+import 'package:my_doctor_buddy/common/screens/background_ui.dart';
 import 'package:my_doctor_buddy/common/widgets/common_widgets.dart';
 import 'package:my_doctor_buddy/core/const_colors.dart';
-import 'package:my_doctor_buddy/core/services/google_auth.dart';
-import 'package:my_doctor_buddy/home.dart';
+import 'package:my_doctor_buddy/services/google_auth.dart';
+import 'package:my_doctor_buddy/views/home.dart';
 import 'package:sizer/sizer.dart';
 
 class AuthScreen extends StatefulWidget {

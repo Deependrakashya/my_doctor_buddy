@@ -5,7 +5,7 @@ class DoctorBuddyWidgets {
   Widget ChatListTile({required String title, required VoidCallback ontap}) {
     return InkWell(
       onTap: ontap,
-      borderRadius: BorderRadius.circular(25.sp),
+      borderRadius: BorderRadius.circular(17.sp),
 
       splashColor: const Color.fromARGB(185, 255, 255, 255),
       child: Container(
@@ -13,13 +13,21 @@ class DoctorBuddyWidgets {
         padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 15.sp),
         decoration: BoxDecoration(
           color: const Color.fromARGB(215, 120, 120, 120),
-          borderRadius: BorderRadius.circular(25.sp),
+          borderRadius: BorderRadius.circular(17.sp),
         ),
         child: Row(
           children: [
             Container(
               margin: EdgeInsets.only(left: 2.w, right: 5.w),
-              child: Image.asset("assets/icons/home/AiIcon.png", height: 28.sp),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50.sp),
+              ),
+              child: CircleAvatar(
+                child: Image.asset(
+                  "assets/icons/home/AiIcon.png",
+                  height: 28.sp,
+                ),
+              ),
             ),
             Container(
               width: 60.w,

@@ -1,18 +1,34 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_doctor_buddy/common/presentations/bg_ui_without_cirucles.dart';
-import 'package:my_doctor_buddy/core/services/account_service.dart.dart';
-import 'package:my_doctor_buddy/doctor_buddy/presentation/chat_screen.dart';
-import 'package:my_doctor_buddy/doctor_buddy/presentation/doctor_buddy_controller.dart';
-import 'package:my_doctor_buddy/doctor_buddy/presentation/widgets/doctor_buddy_widgets.dart';
+import 'package:my_doctor_buddy/common/screens/bg_ui_without_cirucles.dart';
+import 'package:my_doctor_buddy/services/account_service.dart.dart';
+import 'package:my_doctor_buddy/views/chat/chat_screen.dart';
+import 'package:my_doctor_buddy/viewModel/doctor_buddy_controller.dart';
+import 'package:my_doctor_buddy/views/chat/doctor_buddy_widgets.dart';
 import 'package:sizer/sizer.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class DoctorBuddyScreen extends StatelessWidget {
+class DoctorBuddyScreen extends StatefulWidget {
   DoctorBuddyScreen({super.key});
+
+  @override
+  State<DoctorBuddyScreen> createState() => _DoctorBuddyScreenState();
+}
+
+class _DoctorBuddyScreenState extends State<DoctorBuddyScreen> {
   final DoctorBuddyController _buddyController = Get.put(
     DoctorBuddyController(),
   );
+
   final DoctorBuddyWidgets doctorBuddyWidgets = DoctorBuddyWidgets();
+  @override
+  void initState() {
+    super.initState();
+    _buddyController.fetchChatHistory();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,23 +81,62 @@ class DoctorBuddyScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(
-              height: 55.h,
-              child: ListView.builder(
-                itemCount: 5,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: EdgeInsets.only(top: 1.h, left: 2.w, right: 2.w),
-                    child: doctorBuddyWidgets.ChatListTile(
-                      ontap: () {},
-                      title:
-                          "this is a chat title may be defferenet for other times ",
+            Obx(() {
+              return _buddyController.isLoading.value
+                  ? Skeletonizer(
+                    effect: ShimmerEffect.raw(
+                      colors: [Colors.black, Colors.white],
+                      // from: Colors.white,
+                      // to: Colors.black,
+                      tileMode: TileMode.mirror,
+                      duration: Duration(milliseconds: 800),
+                    ),
+
+                    child: SizedBox(
+                      height: 55.h,
+                      child: ListView.builder(
+                        itemCount: 5,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: EdgeInsets.only(
+                              top: 1.h,
+                              left: 2.w,
+                              right: 2.w,
+                            ),
+                            child: doctorBuddyWidgets.ChatListTile(
+                              ontap: () {},
+                              title:
+                                  "this is a chat title may be defferenet for other times ",
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  )
+                  : SizedBox(
+                    height: 55.h,
+                    child: ListView.builder(
+                      itemCount: _buddyController.chatHistory.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: EdgeInsets.only(
+                            top: 1.h,
+                            left: 2.w,
+                            right: 2.w,
+                          ),
+                          child: doctorBuddyWidgets.ChatListTile(
+                            ontap: () {},
+                            title:
+                                _buddyController.chatHistory[index]["question"],
+                          ),
+                        );
+                      },
                     ),
                   );
-                },
-              ),
-            ),
+            }),
+
             SizedBox(height: 4.h),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 2.5.w),

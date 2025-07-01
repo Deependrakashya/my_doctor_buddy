@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:my_doctor_buddy/common/presentations/lines_painter.dart';
+import 'package:my_doctor_buddy/common/screens/lines_painter.dart';
 
 class BackgroundUi {
   static Widget customBgUi() {

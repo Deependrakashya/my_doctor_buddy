@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_doctor_buddy/common/presentations/lines_painter.dart';
+import 'package:my_doctor_buddy/common/screens/lines_painter.dart';
 
 class BgUiWithoutCirucles extends StatelessWidget {
   const BgUiWithoutCirucles({super.key});

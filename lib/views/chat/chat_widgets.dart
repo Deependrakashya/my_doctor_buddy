@@ -1,8 +1,9 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
-import 'package:my_doctor_buddy/doctor_buddy/presentation/chat_controller.dart';
+import 'package:my_doctor_buddy/viewModel/chat_controller.dart';
 import 'package:sizer/sizer.dart';
 
 class ChatWidgets {
@@ -117,7 +118,7 @@ class ChatWidgets {
             keyboardType: TextInputType.multiline,
             maxLines: null, // 👈 allows infinite lines
             minLines: 1, // 👈 optional: defines the initial height
-
+            controller: chatController.queryController,
             decoration: InputDecoration(
               filled: true,
               hintText: "Ask for Help! ",
@@ -154,7 +155,9 @@ class ChatWidgets {
             ),
 
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                chatController.sendMessage();
+              },
               icon: Image.asset("assets/icons/home/send.png", height: 25.sp),
             ),
           ],
@@ -163,7 +166,57 @@ class ChatWidgets {
     );
   }
 
-  static Widget BotChat() {
-    return Container(child: Row(children: []));
+  static Widget UserChat(String message, {String? imagePath}) {
+    return Align(
+      alignment: Alignment.topRight,
+      child: Container(
+        // margin: EdgeInsets.symmetric(vertical: 2.h, horizontal: 4.w),
+        constraints: BoxConstraints(minWidth: 15.w, maxWidth: 80.w),
+
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(179, 196, 196, 196),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.sp),
+            topRight: Radius.circular(20.sp),
+
+            bottomLeft: Radius.circular(20.sp),
+          ),
+        ),
+        child: Column(
+          children: [
+            if (imagePath != null) Image.asset(imagePath, height: 20.h),
+            Text(textAlign: TextAlign.right, message, style: TextStyle()),
+          ],
+        ),
+      ),
+    );
+    ;
+  }
+
+  static Widget BotChat(String message) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 2.h, horizontal: 4.w),
+        constraints: BoxConstraints(minWidth: 20),
+        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(179, 196, 196, 196),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.sp),
+            topRight: Radius.circular(20.sp),
+
+            bottomRight: Radius.circular(20.sp),
+          ),
+        ),
+        child: MarkdownBody(
+          data: message,
+
+          styleSheetTheme: MarkdownStyleSheetBaseTheme.platform,
+          styleSheet: MarkdownStyleSheet(),
+        ),
+      ),
+    );
   }
 }
