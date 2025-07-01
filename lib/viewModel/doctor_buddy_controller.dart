@@ -39,8 +39,10 @@ class DoctorBuddyController extends GetxController {
       docRef.get().then(
         (DocumentSnapshot doc) {
           final data = doc.data() as Map<String, dynamic>;
-          log(data.toString());
+          // log(data.toString());
           chatHistory.value = List<Map<dynamic, dynamic>>.from(data["qna"]);
+          chatHistory.value = chatHistory.reversed.toList();
+
           update();
           // ...
           isLoading.value = false;

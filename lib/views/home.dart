@@ -1,17 +1,11 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_doctor_buddy/common/screens/background_ui.dart';
 import 'package:my_doctor_buddy/common/screens/bg_ui_without_cirucles.dart';
-import 'package:my_doctor_buddy/core/const_colors.dart';
 import 'package:my_doctor_buddy/services/account_service.dart.dart';
-import 'package:my_doctor_buddy/services/google_auth.dart';
-import 'package:my_doctor_buddy/services/onboarding_service.dart';
 import 'package:my_doctor_buddy/views/dashboard/dashboard_screen.dart';
 import 'package:my_doctor_buddy/views/chat/doctor_buddy_screen.dart';
-import 'package:my_doctor_buddy/views/onboarding/onboarding_screen.dart';
 import 'package:my_doctor_buddy/views/tips&feeds/tips_feed_screen.dart';
-import 'package:sizer/sizer.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

@@ -114,26 +114,26 @@ class _DoctorBuddyScreenState extends State<DoctorBuddyScreen> {
                       ),
                     ),
                   )
-                  : SizedBox(
-                    height: 55.h,
-                    child: ListView.builder(
-                      itemCount: _buddyController.chatHistory.length,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: EdgeInsets.only(
-                            top: 1.h,
-                            left: 2.w,
-                            right: 2.w,
-                          ),
-                          child: doctorBuddyWidgets.ChatListTile(
-                            ontap: () {},
-                            title:
-                                _buddyController.chatHistory[index]["question"],
-                          ),
-                        );
-                      },
-                    ),
+                  : ListView.builder(
+                    padding: EdgeInsets.all(0),
+                    itemCount: 5,
+                    shrinkWrap: true,
+
+                    // reverse: true,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: EdgeInsets.only(
+                          top: 1.h,
+                          left: 2.w,
+                          right: 2.w,
+                        ),
+                        child: doctorBuddyWidgets.ChatListTile(
+                          ontap: () {},
+                          title:
+                              _buddyController.chatHistory[index]["question"],
+                        ),
+                      );
+                    },
                   );
             }),
 

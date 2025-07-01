@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:my_doctor_buddy/views/common/glass_background.dart';
 import 'package:sizer/sizer.dart';
 
 class DoctorBuddyWidgets {
@@ -6,30 +9,21 @@ class DoctorBuddyWidgets {
     return InkWell(
       onTap: ontap,
       borderRadius: BorderRadius.circular(17.sp),
-
       splashColor: const Color.fromARGB(185, 255, 255, 255),
-      child: Container(
-        // margin: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 15.sp),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(215, 120, 120, 120),
-          borderRadius: BorderRadius.circular(17.sp),
-        ),
+      child: GlassBackground(
         child: Row(
           children: [
             Container(
-              margin: EdgeInsets.only(left: 2.w, right: 5.w),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.sp),
-              ),
+              margin: EdgeInsets.only(right: 4.w),
               child: CircleAvatar(
+                backgroundColor: Colors.transparent,
                 child: Image.asset(
                   "assets/icons/home/AiIcon.png",
                   height: 28.sp,
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               width: 60.w,
               child: Text(
                 title,
