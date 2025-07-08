@@ -69,7 +69,8 @@ class TipsFeedScreen extends StatelessWidget {
                           child: GlassBackground(
                             height: 60,
                             borderRadius: BorderRadius.circular(20),
-                            child: SizedBox(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 5),
                               height: 100, // or whatever fits your design
                               child: SingleChildScrollView(
                                 child: MarkdownBody(

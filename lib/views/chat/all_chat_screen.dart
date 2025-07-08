@@ -66,7 +66,7 @@ class _AllChatScreenState extends State<AllChatScreen> {
                           ),
                         ),
                       )
-                      : widget.buddyController.chatHistory.length > 1
+                      : widget.buddyController.chatHistory.length >= 1
                       ? Expanded(
                         child: ListView.builder(
                           padding: EdgeInsets.all(0),

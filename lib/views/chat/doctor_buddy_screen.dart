@@ -133,7 +133,10 @@ class _DoctorBuddyScreenState extends State<DoctorBuddyScreen> {
                       : buddyController.chatHistory.isNotEmpty
                       ? ListView.builder(
                         padding: EdgeInsets.zero,
-                        itemCount: 5,
+                        itemCount:
+                            buddyController.chatHistory.length >= 5
+                                ? 5
+                                : buddyController.chatHistory.length,
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(), // optional
                         itemBuilder: (context, index) {

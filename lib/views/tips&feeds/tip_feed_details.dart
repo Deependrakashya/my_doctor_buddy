@@ -16,13 +16,13 @@ class TipFeedDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            BgUiWithoutCirucles(),
+      body: Stack(
+        children: [
+          BgUiWithoutCirucles(),
 
-            /// Entire scrollable content
-            Column(
+          /// Entire scrollable content
+          SafeArea(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -50,7 +50,8 @@ class TipFeedDetails extends StatelessWidget {
                             h1: TextStyle(
                               color: Colors.white,
                               overflow: TextOverflow.ellipsis,
-                              fontSize: 17.sp,
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -146,8 +147,8 @@ class TipFeedDetails extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
