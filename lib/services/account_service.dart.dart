@@ -13,6 +13,11 @@ class AccountService {
     return (name != null && name.isNotEmpty) ? name : "Anonymous";
   }
 
+  static String get currentUserId {
+    final name = FirebaseAuth.instance.currentUser?.uid;
+    return (name != null && name.isNotEmpty) ? name : "Anonymous";
+  }
+
   static String get currentUserEmail {
     final email = FirebaseAuth.instance.currentUser?.email;
     return (email != null && email.isNotEmpty) ? email : "Anonymous";

@@ -32,6 +32,7 @@ class CommonWidgets {
             colors: [Color(0xffE0FE52), Color(0xff8BE595)],
           ),
         ),
+
         alignment: Alignment.center,
 
         child: Text(
@@ -43,6 +44,60 @@ class CommonWidgets {
           ),
         ),
       ),
+    );
+  }
+
+  static alertDialog({
+    required VoidCallback onSubmit,
+    required VoidCallback onCancel,
+    required String title,
+    required String descritpion,
+  }) {
+    return AlertDialog(
+      title: Text(title),
+      titleTextStyle: TextStyle(color: Colors.redAccent, fontSize: 22.sp),
+      content: Text(descritpion),
+      contentTextStyle: TextStyle(
+        color: const Color.fromARGB(255, 227, 185, 13),
+      ),
+
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+              style: ButtonStyle(
+                elevation: WidgetStatePropertyAll(3),
+                backgroundColor: WidgetStatePropertyAll(Colors.grey),
+              ),
+              onPressed: onCancel,
+
+              child: const Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(width: 5),
+            ElevatedButton(
+              style: ButtonStyle(
+                shadowColor: WidgetStatePropertyAll(Colors.black),
+                elevation: WidgetStatePropertyAll(5),
+              ),
+              onPressed: onSubmit,
+              child: const Text(
+                "Continue",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

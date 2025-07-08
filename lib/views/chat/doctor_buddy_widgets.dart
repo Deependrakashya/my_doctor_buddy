@@ -5,10 +5,14 @@ import 'package:my_doctor_buddy/views/common/glass_background.dart';
 import 'package:sizer/sizer.dart';
 
 class DoctorBuddyWidgets {
-  Widget ChatListTile({required String title, required VoidCallback ontap}) {
+  Widget ChatListTile({
+    required String title,
+    required VoidCallback ontap,
+    bool? isImage,
+  }) {
     return InkWell(
       onTap: ontap,
-      borderRadius: BorderRadius.circular(17.sp),
+      borderRadius: BorderRadius.circular(25.sp),
       splashColor: const Color.fromARGB(185, 255, 255, 255),
       child: GlassBackground(
         child: Row(
@@ -42,20 +46,30 @@ class DoctorBuddyWidgets {
     );
   }
 
-  Widget NewChatButton({required VoidCallback ontap}) {
-    return ElevatedButton(
-      onPressed: ontap,
-      style: ButtonStyle(
-        splashFactory: InkRipple.splashFactory,
-        backgroundColor: WidgetStatePropertyAll(Colors.white),
-      ),
-      child: Container(
-        // width: 90.w,
-        // margin: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 18.sp),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(25.sp)),
-        alignment: Alignment.center,
-        child: Text("Ask Something", style: TextStyle(color: Colors.black)),
+  Widget NewChatButton({
+    required String title,
+    required VoidCallback ontap,
+    bool? isImage,
+  }) {
+    return InkWell(
+      onTap: ontap,
+      borderRadius: BorderRadius.circular(25.sp),
+      splashColor: const Color.fromARGB(255, 255, 255, 255),
+
+      child: GlassBackground(
+        child: Center(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 18.sp,
+
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,13 +1,15 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:my_doctor_buddy/model/q_n_a_model.dart';
 import 'package:my_doctor_buddy/services/bot_services.dart';
 import 'package:my_doctor_buddy/services/firestore_services.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -23,9 +25,10 @@ class ChatController extends GetxController {
   FirestoreServices _firestoreServices = FirestoreServices();
   Rx<File?> selectedImage = Rx<File?>(null);
 
-  // AIChatSession aiChatSession = AIChatSession();
-
   final aiChatSession = AIChatSession();
+  String? activeChatId;
+  bool isNewChat = true;
+
   @override
   void onInit() {
     super.onInit();
@@ -41,55 +44,103 @@ class ChatController extends GetxController {
         }
       });
     });
+
+    _initChat();
   }
 
-  sendMessage() async {
+  Future<void> _initChat() async {
+    if (activeChatId == null) {
+      // Set as new chat
+      isNewChat = true;
+    }
+  }
+
+  Future<void> loadChatById(String chatId) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      activeChatId = chatId;
+      chatHistory.clear();
+
+      final messagesSnap =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .collection('chats')
+              .doc(chatId)
+              .collection('messages')
+              .orderBy('timestamp')
+              .get();
+
+      for (var doc in messagesSnap.docs) {
+        final data = doc.data();
+        final role = data['role'];
+        final message = data['content'];
+
+        if (role == 'user') {
+          chatHistory.add(Content.text(message));
+        } else if (role == 'bot') {
+          chatHistory.add(Content.model([TextPart(message)]));
+        }
+      }
+
+      log("Loaded chat: $chatId");
+      update();
+    } catch (e) {
+      log("❌ Error loading chat: $e");
+    }
+  }
+
+  Future<void> sendMessage() async {
     final userMessage = queryController.text.trim();
     if (userMessage.isEmpty) return;
 
-    // Add user message to chat history
     if (selectedImage.value != null) {
-      final bytes = await selectedImage!.value?.readAsBytes();
+      final bytes = await selectedImage!.value!.readAsBytes();
       chatHistory.add(
-        Content.multi([DataPart('image/jpeg', bytes!), TextPart(userMessage)]),
+        Content.multi([DataPart('image/jpeg', bytes), TextPart(userMessage)]),
       );
     } else {
       chatHistory.add(Content.text(userMessage));
     }
 
-    // Clear input
+    // If it's a new chat, create one using user's first message as the title
+    if (isNewChat) {
+      activeChatId = await _firestoreServices.createNewChat(userMessage);
+      isNewChat = false;
+    }
+
+    await _firestoreServices.addMessageToChat(
+      chatId: activeChatId!,
+      role: 'user',
+      content: userMessage,
+    );
+
     queryController.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
     isStopGenerating.value = true;
-    // Start streaming AI response
+    selectedImage.value = null;
+
+    String botResponse = "";
     final responseStream = aiChatSession.sendMessageStream(
       userMessage,
-      imageUrl: selectedImage?.value?.path,
+      imageUrl: selectedImage.value?.path,
     );
-    // 💥 Hide keyboard
-    FocusManager.instance.primaryFocus?.unfocus();
-
-    selectedImage.value = null;
-    // Track response chunks
-    String botResponse = "";
 
     responseStream.listen(
       (chunk) {
         log("AI replied chunk: $chunk");
-
-        // Append chunk to final message
         botResponse += chunk;
-
-        // Optional: Update live typing indicator (if UI supports)
       },
-      onDone: () {
-        // Final AI message pushed to chat history
+      onDone: () async {
         if (botResponse.isNotEmpty) {
-          _firestoreServices.saveQnA(
-            question: userMessage,
-            answer: botResponse,
-          );
-          // _firestoreServices.fetchUserQnAs();
           chatHistory.add(Content.model([TextPart(botResponse)]));
+          await _firestoreServices.addMessageToChat(
+            chatId: activeChatId!,
+            role: 'bot',
+            content: botResponse,
+          );
         }
         isStopGenerating.value = false;
       },
@@ -103,49 +154,13 @@ class ChatController extends GetxController {
     );
   }
 
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-
-  /// Opens native camera and captures image
   Future<void> openCamera() async {
     await _ensureCameraInitialized();
 
     if (await Permission.camera.request().isGranted) {
       final pickedFile = await ImagePicker().pickImage(
         source: ImageSource.camera,
+        imageQuality: 50,
       );
       if (pickedFile != null) {
         selectedImage.value = File(pickedFile.path);
@@ -158,7 +173,6 @@ class ChatController extends GetxController {
     }
   }
 
-  /// Initializes available cameras and sets up the controller
   Future<void> _ensureCameraInitialized() async {
     try {
       await _requestCameraPermission();
@@ -173,21 +187,12 @@ class ChatController extends GetxController {
       );
 
       await cameraController.initialize();
-      update(); // triggers GetBuilder/UI rebuild
+      update();
     } catch (e) {
       log("Camera initialization error: $e");
     }
   }
 
-  /// Requests camera permission
-  Future<void> _requestCameraPermission() async {
-    final status = await Permission.camera.request();
-    if (!status.isGranted) {
-      throw Exception("Camera permission not granted");
-    }
-  }
-
-  /// Pick image from gallery with smart permission handling (iOS + Android)
   Future<void> pickImageFromGallery() async {
     try {
       final bool permissionGranted = await _handleGalleryPermission();
@@ -199,17 +204,13 @@ class ChatController extends GetxController {
       final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (picked != null) {
         selectedImage.value = File(picked.path);
-        log("Selected Image: $selectedImage");
         update();
-      } else {
-        log("Image selection cancelled");
       }
     } catch (e) {
       log("Error picking image: $e");
     }
   }
 
-  /// Handle permission checks based on platform and Android SDK version
   Future<bool> _handleGalleryPermission() async {
     if (Platform.isAndroid) {
       final deviceInfo = DeviceInfoPlugin();
@@ -225,14 +226,19 @@ class ChatController extends GetxController {
     return false;
   }
 
-  /// Show fallback permission dialog
+  Future<void> _requestCameraPermission() async {
+    final status = await Permission.camera.request();
+    if (!status.isGranted) {
+      throw Exception("Camera permission not granted");
+    }
+  }
+
   void _showPermissionDialog(String message) {
     Get.dialog(
       AlertDialog(
         title: const Text("Permission Required"),
         content: Text(message),
         contentTextStyle: TextStyle(color: Colors.green),
-
         actions: [
           Expanded(
             child: Row(
@@ -240,10 +246,9 @@ class ChatController extends GetxController {
               children: [
                 ElevatedButton(
                   onPressed: openAppSettings,
-
                   child: const Text("Settings"),
                 ),
-                SizedBox(width: 5),
+                const SizedBox(width: 5),
                 ElevatedButton(
                   onPressed: () => Get.back(),
                   child: const Text("Cancel"),
@@ -256,7 +261,6 @@ class ChatController extends GetxController {
     );
   }
 
-  /// Dispose camera controller safely
   @override
   void onClose() {
     if (cameraController.value.isInitialized) {

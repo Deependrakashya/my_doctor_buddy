@@ -175,46 +175,50 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ],
                 )
-                : Container(
-                  constraints: BoxConstraints(maxHeight: 20.h),
-                  child: Column(
-                    children: [
-                      CommonWidgets.customButton(
-                        ontap: () async {
-                          HapticFeedback.mediumImpact();
-                          setState(() {
-                            isloading = true;
-                          });
-                          final userCred =
-                              await AuthService().signInWithGoogle();
-                          if (userCred != null) {
-                            Get.offAll(Home());
+                : SafeArea(
+                  child: Container(
+                    constraints: BoxConstraints(maxHeight: 20.h),
+                    child: Column(
+                      children: [
+                        CommonWidgets.customButton(
+                          ontap: () async {
+                            HapticFeedback.mediumImpact();
                             setState(() {
-                              isloading = false;
-                              isAnonymousTapped = false;
+                              isloading = true;
                             });
-                            print("Logged in as ${userCred.user?.toString()}");
-                          } else {
-                            setState(() {
-                              isloading = false;
-                            });
-                            print("Google Sign-In canceled or failed");
-                          }
-                        },
-                        title: "Continue with Google",
-                      ),
-                      CommonWidgets.customButton(
-                        ontap: () async {
-                          HapticFeedback.mediumImpact();
+                            final userCred =
+                                await AuthService().signInWithGoogle();
+                            if (userCred != null) {
+                              Get.offAll(Home());
+                              setState(() {
+                                isloading = false;
+                                isAnonymousTapped = false;
+                              });
+                              print(
+                                "Logged in as ${userCred.user?.toString()}",
+                              );
+                            } else {
+                              setState(() {
+                                isloading = false;
+                              });
+                              print("Google Sign-In canceled or failed");
+                            }
+                          },
+                          title: "Continue with Google",
+                        ),
+                        CommonWidgets.customButton(
+                          ontap: () async {
+                            HapticFeedback.mediumImpact();
 
-                          setState(() {
-                            isAnonymousTapped = true;
-                          });
-                        },
-                        title: "Continue Anonymously",
-                        margin: 0.h,
-                      ),
-                    ],
+                            setState(() {
+                              isAnonymousTapped = true;
+                            });
+                          },
+                          title: "Continue Anonymously",
+                          margin: 0.h,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
       ),

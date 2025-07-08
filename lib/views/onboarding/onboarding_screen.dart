@@ -53,64 +53,66 @@ class OnboardingScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomSheet: Container(
-        height: 30.h,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            SmoothPageIndicator(
-              controller: onboardingController.pageController,
+      bottomSheet: SafeArea(
+        child: Container(
+          height: 30.h,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SmoothPageIndicator(
+                controller: onboardingController.pageController,
 
-              count: 3,
-              effect: JumpingDotEffect(
-                activeDotColor: green,
-                dotHeight: 9.68,
-                dotWidth: 9.68,
-                spacing: 4,
-                dotColor: const Color.fromRGBO(225, 225, 225, 1),
-              ),
-              onDotClicked: (index) {
-                log(index.toString());
-                onboardingController.pageController.animateToPage(
-                  index,
-                  duration: Duration(milliseconds: 200),
-                  curve: Curves.linear,
-                );
-              },
-            ),
-            SizedBox(height: 5.h),
-            Obx(() {
-              return CommonWidgets.customButton(
-                ontap: () async {
-                  HapticFeedback.lightImpact();
-                  if (onboardingController.currentPage.value != 2) {
-                    onboardingController.pageController.nextPage(
-                      duration: Duration(milliseconds: 800),
-                      curve: Curves.easeInOut,
-                    );
-                  }
-                  if (onboardingController.currentPage.value >= 2) {
-                    OnboardingService().completeOnboarding();
-                    final isOnboardingCompleted =
-                        await OnboardingService().isOnboardingCompleted();
-                    log('set true onboarding');
-                    isOnboardingCompleted
-                        ? Get.offAll(
-                          AuthScreen(),
-                          transition: Transition.fadeIn,
-                          duration: Duration(seconds: 1),
-                          curve: Curves.easeIn,
-                        )
-                        : null;
-                  }
+                count: 3,
+                effect: JumpingDotEffect(
+                  activeDotColor: green,
+                  dotHeight: 9.68,
+                  dotWidth: 9.68,
+                  spacing: 4,
+                  dotColor: const Color.fromRGBO(225, 225, 225, 1),
+                ),
+                onDotClicked: (index) {
+                  log(index.toString());
+                  onboardingController.pageController.animateToPage(
+                    index,
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.linear,
+                  );
                 },
-                title:
-                    onboardingController.currentPage.value != 2
-                        ? "Next"
-                        : "Continue",
-              );
-            }),
-          ],
+              ),
+              SizedBox(height: 5.h),
+              Obx(() {
+                return CommonWidgets.customButton(
+                  ontap: () async {
+                    HapticFeedback.lightImpact();
+                    if (onboardingController.currentPage.value != 2) {
+                      onboardingController.pageController.nextPage(
+                        duration: Duration(milliseconds: 800),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                    if (onboardingController.currentPage.value >= 2) {
+                      OnboardingService().completeOnboarding();
+                      final isOnboardingCompleted =
+                          await OnboardingService().isOnboardingCompleted();
+                      log('set true onboarding');
+                      isOnboardingCompleted
+                          ? Get.offAll(
+                            AuthScreen(),
+                            transition: Transition.fadeIn,
+                            duration: Duration(seconds: 1),
+                            curve: Curves.easeIn,
+                          )
+                          : null;
+                    }
+                  },
+                  title:
+                      onboardingController.currentPage.value != 2
+                          ? "Next"
+                          : "Continue",
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );

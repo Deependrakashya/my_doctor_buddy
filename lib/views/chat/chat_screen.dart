@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:my_doctor_buddy/common/screens/bg_ui_without_cirucles.dart';
 import 'package:my_doctor_buddy/viewModel/chat_controller.dart';
+import 'package:my_doctor_buddy/viewModel/doctor_buddy_controller.dart';
 import 'package:my_doctor_buddy/views/chat/chat_widgets.dart';
 import 'package:sizer/sizer.dart';
 
@@ -46,6 +47,8 @@ class _ChatScreenState extends State<ChatScreen>
 
   @override
   void dispose() {
+    Get.find<DoctorBuddyController>().fetchChatHistory();
+
     Get.delete<ChatController>();
     _controller.dispose();
     super.dispose();
@@ -71,7 +74,8 @@ class _ChatScreenState extends State<ChatScreen>
 
                 child: Column(
                   children: [
-                    ChatWidgets.customChatAppBar(),
+                    ChatWidgets.customChatAppBar(title: "New Session"),
+
                     Obx(() {
                       if (chatController.chatHistory.isEmpty) {
                         return Container(
@@ -86,11 +90,9 @@ class _ChatScreenState extends State<ChatScreen>
                                       text,
                                       style: TextStyle(color: Colors.black),
                                     ),
-                                    backgroundColor: const Color.fromARGB(
-                                      255,
-                                      146,
-                                      146,
-                                      146,
+                                    backgroundColor: Colors.transparent,
+                                    color: WidgetStatePropertyAll(
+                                      Color.fromRGBO(212, 218, 212, .1),
                                     ),
 
                                     onPressed: () {
@@ -110,8 +112,10 @@ class _ChatScreenState extends State<ChatScreen>
                         height: 75.h,
                         child: ListView.builder(
                           itemCount: chatController.chatHistory.length,
+                          padding: EdgeInsets.all(0),
                           controller: chatController.scrollController,
                           physics: BouncingScrollPhysics(),
+                          shrinkWrap: true,
                           itemBuilder: (context, index) {
                             final content = chatController.chatHistory[index];
                             final isUser = content.role == 'user';
@@ -125,8 +129,22 @@ class _ChatScreenState extends State<ChatScreen>
                                       ),
                                       child:
                                           isUser
-                                              ? ChatWidgets.UserChat(part.text)
-                                              : ChatWidgets.BotChat(part.text),
+                                              ? Container(
+                                                margin: EdgeInsets.only(
+                                                  right: 10.sp,
+                                                ),
+                                                child: ChatWidgets.UserChat(
+                                                  part.text,
+                                                ),
+                                              )
+                                              : Container(
+                                                margin: EdgeInsets.only(
+                                                  left: 10.sp,
+                                                ),
+                                                child: ChatWidgets.BotChat(
+                                                  part.text,
+                                                ),
+                                              ),
                                     );
                                   } else if (part is DataPart &&
                                       part.mimeType.startsWith('image/')) {
@@ -203,57 +221,59 @@ class _ChatScreenState extends State<ChatScreen>
             ),
           ],
         ),
-        bottomSheet: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 60.w,
-              color: Colors.transparent,
-              child: Obx(() {
+        bottomSheet: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60.w,
+                color: Colors.transparent,
+                child: Obx(() {
+                  log(
+                    "chatController.isStopGenerating.value ${chatController.isStopGenerating.value}",
+                  );
+
+                  return chatController.isStopGenerating.value
+                      ? Container(
+                        margin: EdgeInsets.only(bottom: 5.h),
+
+                        child: ChatWidgets.stopGeneratingButton(
+                          ontap: () {
+                            chatController.aiChatSession.cancelStream();
+                          },
+                          typewriterController: typewriterController,
+                        ),
+                      )
+                      : Container();
+                }),
+              ),
+              Obx(() {
                 log(
                   "chatController.isStopGenerating.value ${chatController.isStopGenerating.value}",
                 );
 
-                return chatController.isStopGenerating.value
+                return !chatController.isStopGenerating.value
                     ? Container(
-                      margin: EdgeInsets.only(bottom: 5.h),
-
-                      child: ChatWidgets.stopGeneratingButton(
-                        ontap: () {
-                          chatController.aiChatSession.cancelStream();
-                        },
-                        typewriterController: typewriterController,
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 1.w,
+                        vertical: 2.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15.sp),
+                      ),
+                      // padding: EdgeInsets.symmetric(horizontal: 2.w),
+                      child: Column(
+                        children: [
+                          // : Container();
+                          ChatWidgets.chatInput(chatController: chatController),
+                        ],
                       ),
                     )
                     : Container();
               }),
-            ),
-            Obx(() {
-              log(
-                "chatController.isStopGenerating.value ${chatController.isStopGenerating.value}",
-              );
-
-              return !chatController.isStopGenerating.value
-                  ? Container(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: 1.w,
-                      vertical: 2.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15.sp),
-                    ),
-                    // padding: EdgeInsets.symmetric(horizontal: 2.w),
-                    child: Column(
-                      children: [
-                        // : Container();
-                        ChatWidgets.chatInput(chatController: chatController),
-                      ],
-                    ),
-                  )
-                  : Container();
-            }),
-          ],
+            ],
+          ),
         ),
       ),
     );

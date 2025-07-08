@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_doctor_buddy/common/screens/bg_ui_without_cirucles.dart';
 import 'package:my_doctor_buddy/services/account_service.dart.dart';
+import 'package:my_doctor_buddy/viewModel/chat_controller.dart';
+import 'package:my_doctor_buddy/views/chat/all_chat_screen.dart';
 import 'package:my_doctor_buddy/views/chat/chat_screen.dart';
 import 'package:my_doctor_buddy/viewModel/doctor_buddy_controller.dart';
 import 'package:my_doctor_buddy/views/chat/doctor_buddy_widgets.dart';
+import 'package:my_doctor_buddy/views/chat_details/chat_details_screen.dart';
+import 'package:my_doctor_buddy/views/common/glass_background.dart';
 import 'package:sizer/sizer.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -19,7 +23,7 @@ class DoctorBuddyScreen extends StatefulWidget {
 }
 
 class _DoctorBuddyScreenState extends State<DoctorBuddyScreen> {
-  final DoctorBuddyController _buddyController = Get.put(
+  final DoctorBuddyController buddyController = Get.put(
     DoctorBuddyController(),
   );
 
@@ -27,127 +31,180 @@ class _DoctorBuddyScreenState extends State<DoctorBuddyScreen> {
   @override
   void initState() {
     super.initState();
-    _buddyController.fetchChatHistory();
+    buddyController.fetchChatHistory();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            // Top bar Greeting with Name
-            Obx(() {
-              return Container(
-                margin: EdgeInsets.only(left: 5.w),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "${_buddyController.greetingsMessage}",
-                      style: TextStyle(
-                        fontSize: 24.sp,
-                        fontFamily: "Albert_Sans",
-                        fontWeight: FontWeight.bold,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top bar Greeting with Name
+                Obx(() {
+                  return Container(
+                    margin: EdgeInsets.only(left: 5.w),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${buddyController.greetingsMessage}",
+                          style: TextStyle(
+                            fontSize: 24.sp,
+                            fontFamily: "Albert_Sans",
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          AccountService.currentUserName,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+                SizedBox(height: 4.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 3.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Recent Chats",
+                        style: customTextStyle16(Colors.white),
                       ),
-                    ),
-                    Text(
-                      AccountService.currentUserName,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
+                      TextButton(
+                        onPressed: () {
+                          Get.to(
+                            AllChatScreen(buddyController: buddyController),
+                          );
+                        },
+                        child: Text(
+                          "View All",
+                          style: customTextStyle16(
+                            const Color.fromARGB(255, 186, 181, 181),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-            SizedBox(height: 4.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 3.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Recent Chats", style: customTextStyle16(Colors.white)),
-                  Text(
-                    "View All",
-                    style: customTextStyle16(
-                      const Color.fromARGB(255, 186, 181, 181),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            Obx(() {
-              return _buddyController.isLoading.value
-                  ? Skeletonizer(
-                    effect: ShimmerEffect.raw(
-                      colors: [Colors.black, Colors.white],
-                      // from: Colors.white,
-                      // to: Colors.black,
-                      tileMode: TileMode.mirror,
-                      duration: Duration(milliseconds: 800),
-                    ),
+                ),
+                Obx(() {
+                  return buddyController.isLoading.value
+                      ? Skeletonizer(
+                        effect: ShimmerEffect.raw(
+                          colors: [
+                            const Color.fromARGB(111, 255, 255, 255),
+                            const Color.fromARGB(146, 255, 255, 255),
+                          ],
+                          // from: Colors.white,
+                          // to: Colors.black,
+                          tileMode: TileMode.mirror,
+                          duration: Duration(milliseconds: 1500),
+                        ),
 
-                    child: SizedBox(
-                      height: 55.h,
-                      child: ListView.builder(
+                        child: ListView.builder(
+                          itemCount: 5,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: EdgeInsets.only(
+                                top: 1.h,
+                                left: 2.w,
+                                right: 2.w,
+                              ),
+                              child: doctorBuddyWidgets.ChatListTile(
+                                ontap: () {},
+                                title:
+                                    "this is a chat title may be defferenet for other times ",
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                      : buddyController.chatHistory.isNotEmpty
+                      ? ListView.builder(
+                        padding: EdgeInsets.zero,
                         itemCount: 5,
                         shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(), // optional
                         itemBuilder: (context, index) {
+                          final chat = buddyController.chatHistory[index];
                           return Container(
-                            margin: EdgeInsets.only(
-                              top: 1.h,
-                              left: 2.w,
-                              right: 2.w,
+                            margin: EdgeInsets.symmetric(
+                              vertical: 1.h,
+                              horizontal: 2.w,
                             ),
                             child: doctorBuddyWidgets.ChatListTile(
-                              ontap: () {},
-                              title:
-                                  "this is a chat title may be defferenet for other times ",
+                              ontap: () async {
+                                final selectedChatId =
+                                    buddyController
+                                        .chatHistory[index]['chatId'];
+                                // log(
+                                //   buddyController.chatHistory[index].toString(),
+                                // );
+                                // or however you're storing chat ID
+                                // await ChatController().loadChatById(
+                                //   selectedChatId,
+                                // );
+
+                                Get.to(
+                                  () => ChatDetailsScreen(
+                                    chatData:
+                                        buddyController.chatHistory[index],
+                                  ),
+                                ); // or your AI chat screen
+                              },
+                              title: chat['title'] ?? 'Untitled Chat',
                             ),
                           );
                         },
-                      ),
-                    ),
-                  )
-                  : ListView.builder(
-                    padding: EdgeInsets.all(0),
-                    itemCount: 5,
-                    shrinkWrap: true,
+                      )
+                      : Container(
+                        margin: EdgeInsets.symmetric(horizontal: 5),
+                        child: GlassBackground(
+                          height: 200,
 
-                    // reverse: true,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: EdgeInsets.only(
-                          top: 1.h,
-                          left: 2.w,
-                          right: 2.w,
-                        ),
-                        child: doctorBuddyWidgets.ChatListTile(
-                          ontap: () {},
-                          title:
-                              _buddyController.chatHistory[index]["question"],
+                          child: Center(
+                            child: Text(
+                              "No Chat History yet !",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                       );
-                    },
-                  );
-            }),
+                }),
+              ],
+            ),
 
-            SizedBox(height: 4.h),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 2.5.w),
-              child: doctorBuddyWidgets.NewChatButton(
-                ontap: () {
-                  Get.to(
-                    ChatScreen(),
-                    transition: Transition.fadeIn,
-                    duration: Duration(seconds: 2),
-                  );
-                },
+            Positioned(
+              bottom: 2.h,
+              right: 2.w,
+              child: Container(
+                height: 8.h,
+                width: 90.w,
+                margin: EdgeInsets.symmetric(horizontal: 2.5.w),
+                child: doctorBuddyWidgets.NewChatButton(
+                  title: "Ask Something ",
+                  ontap: () {
+                    Get.to(
+                      ChatScreen(),
+                      transition: Transition.fadeIn,
+                      duration: Duration(seconds: 2),
+                    );
+                  },
+                ),
               ),
             ),
           ],

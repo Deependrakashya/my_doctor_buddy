@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_doctor_buddy/common/screens/background_ui.dart';
 import 'package:my_doctor_buddy/common/screens/bg_ui_without_cirucles.dart';
 import 'package:my_doctor_buddy/services/account_service.dart.dart';
+import 'package:my_doctor_buddy/views/common/glass_background.dart';
 import 'package:my_doctor_buddy/views/dashboard/dashboard_screen.dart';
 import 'package:my_doctor_buddy/views/chat/doctor_buddy_screen.dart';
 import 'package:my_doctor_buddy/views/tips&feeds/tips_feed_screen.dart';
@@ -40,17 +41,21 @@ class _HomeState extends State<Home> {
           _screenList[_activeIndex],
         ],
       ),
-      bottomNavigationBar: CurvedNavigationBar(
-        color: Color.fromARGB(255, 200, 255, 217),
-        onTap:
-            (value) => setState(() {
-              _activeIndex = value;
-            }),
-        backgroundColor: Colors.transparent,
-        buttonBackgroundColor: Colors.transparent,
-        height: 50,
-        index: _activeIndex,
-        items: _iconList,
+      bottomNavigationBar: GlassBackground(
+        padding: EdgeInsets.all(0),
+        child: CurvedNavigationBar(
+          // color: Color.fromARGB(255, 200, 255, 217),
+          color: Colors.transparent,
+          onTap:
+              (value) => setState(() {
+                _activeIndex = value;
+              }),
+          backgroundColor: Colors.transparent,
+          buttonBackgroundColor: Colors.transparent,
+          height: 50,
+          index: _activeIndex,
+          items: _iconList,
+        ),
       ),
     );
   }

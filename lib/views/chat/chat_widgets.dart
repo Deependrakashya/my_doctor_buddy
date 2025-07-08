@@ -1,13 +1,19 @@
+import 'dart:ui';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:my_doctor_buddy/viewModel/chat_controller.dart';
+import 'package:my_doctor_buddy/views/common/glass_background.dart';
 import 'package:sizer/sizer.dart';
 
 class ChatWidgets {
-  static Widget customChatAppBar() {
+  static Widget customChatAppBar({
+    required String title,
+    String? descritption,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -24,10 +30,10 @@ class ChatWidgets {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "ConvoCraft: UX audit",
+                title,
                 style: TextStyle(color: Colors.white, fontSize: 20.sp),
               ),
-              Text("free chat"),
+              Text(descritption ?? ""),
             ],
           ),
         ),
@@ -167,54 +173,133 @@ class ChatWidgets {
   }
 
   static Widget UserChat(String message, {String? imagePath}) {
-    return Align(
+    return ChatBG(
       alignment: Alignment.topRight,
-      child: Container(
-        // margin: EdgeInsets.symmetric(vertical: 2.h, horizontal: 4.w),
-        constraints: BoxConstraints(minWidth: 15.w, maxWidth: 80.w),
-
-        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(179, 196, 196, 196),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.sp),
-            topRight: Radius.circular(20.sp),
-
-            bottomLeft: Radius.circular(20.sp),
-          ),
-        ),
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+        bottomLeft: Radius.circular(20),
+      ),
+      child: Align(
+        alignment: Alignment.topRight,
         child: Column(
           children: [
             if (imagePath != null) Image.asset(imagePath, height: 20.h),
-            Text(textAlign: TextAlign.right, message, style: TextStyle()),
+            Text(
+              textAlign: TextAlign.right,
+              message,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 17.sp,
+                fontWeight: FontWeight.bold,
+                letterSpacing: .9,
+              ),
+            ),
           ],
         ),
       ),
     );
-    ;
   }
 
   static Widget BotChat(String message) {
-    return Align(
+    return ChatBG(
       alignment: Alignment.topLeft,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 2.h, horizontal: 4.w),
-        constraints: BoxConstraints(minWidth: 20),
-        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(179, 196, 196, 196),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.sp),
-            topRight: Radius.circular(20.sp),
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+        bottomRight: Radius.circular(20),
+      ),
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Container(
+          // margin: EdgeInsets.symmetric(vertical: 2.h, horizontal: 4.w),
+          constraints: BoxConstraints(minWidth: 20),
+          padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
+          child: MarkdownBody(
+            data: message,
+            styleSheetTheme: MarkdownStyleSheetBaseTheme.cupertino,
+            styleSheet: MarkdownStyleSheet(
+              p: TextStyle(
+                color: Colors.white.withOpacity(0.95),
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.2,
+                fontSize: 16.sp,
+                height: 1.6, // better line spacing
+              ),
+              strong: TextStyle(
+                color: const Color.fromARGB(255, 255, 255, 255),
+                fontWeight: FontWeight.w900,
+                backgroundColor: Color.fromRGBO(0, 0, 0, 0.185),
+                letterSpacing: 0,
 
-            bottomRight: Radius.circular(20.sp),
+                fontSize: 18.sp,
+              ),
+              em: TextStyle(color: Colors.white70, fontStyle: FontStyle.italic),
+              code: TextStyle(
+                color: Colors.black,
+                fontFamily: 'Albert_Sans',
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w500,
+                backgroundColor: Colors.transparent,
+              ),
+              blockquote: TextStyle(
+                color: Colors.white70,
+                fontStyle: FontStyle.italic,
+              ),
+              listBullet: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+
+                fontSize: 21.sp,
+              ),
+              a: TextStyle(
+                color: Colors.blueAccent,
+                decoration: TextDecoration.underline,
+              ),
+            ),
           ),
         ),
-        child: MarkdownBody(
-          data: message,
+      ),
+    );
+  }
 
-          styleSheetTheme: MarkdownStyleSheetBaseTheme.platform,
-          styleSheet: MarkdownStyleSheet(),
+  static Widget ChatBG({
+    required Widget child,
+    required BorderRadiusGeometry borderRadius,
+    required AlignmentGeometry alignment,
+  }) {
+    return Align(
+      alignment: alignment,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 95.w), // Max width cap
+        child: IntrinsicWidth(
+          child: ClipRRect(
+            borderRadius: borderRadius,
+            child: Stack(
+              children: [
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+                  child: Container(color: Colors.white.withOpacity(0.15)),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 3.w,
+                    vertical: 1.5.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withOpacity(0.06),
+                        blurRadius: 30,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: child,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

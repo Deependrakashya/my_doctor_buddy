@@ -95,59 +95,52 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         bottomSheet:
             isAnonymousTapped
-                ? AlertDialog(
-                  title: const Text("Attention!!"),
-                  titleTextStyle: TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 22.sp,
-                  ),
-                  content: Text(
-                    "You’re signing in as a guest. Your data will be temporarily saved on this device. To secure your account and sync across devices, we recommend creating a full account later.",
-                  ),
-                  contentTextStyle: TextStyle(
-                    color: const Color.fromARGB(255, 227, 185, 13),
-                  ),
+                ? CommonWidgets.alertDialog(
+                  title: "Attention !!",
+                  descritpion:
+                      "You’re signing in as a guest. Your data will be temporarily saved on this device. To secure your account and sync across devices, we recommend creating a full account later.",
+                  onSubmit: () async {
+                    setState(() {
+                      isloading = true;
+                      isAnonymousTapped = false;
+                    });
 
-                  actions: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    final userCred = await AuthService().anonymousLogin();
+                    if (userCred != null) {
+                      setState(() {
+                        isloading = false;
+                        isAnonymousTapped = false;
+                      });
+                      print("Logged in as ${userCred.user?.toString()}");
+                      Get.offAll(Home());
+                    } else {
+                      setState(() {
+                        isloading = false;
+                      });
+                      print("Anonymous login canceled or failed");
+                    }
+                  },
+                  onCancel: () {
+                    setState(() {
+                      isAnonymousTapped = false;
+                    });
+                  },
+                )
+                : SafeArea(
+                  child: Container(
+                    constraints: BoxConstraints(maxHeight: 20.h),
+                    child: Column(
                       children: [
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            elevation: WidgetStatePropertyAll(3),
-                            backgroundColor: WidgetStatePropertyAll(
-                              Colors.grey,
-                            ),
-                          ),
-                          onPressed: () async {
-                            setState(() {
-                              isAnonymousTapped = false;
-                            });
-                          },
-
-                          child: const Text(
-                            "Cancel",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 5),
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            shadowColor: WidgetStatePropertyAll(Colors.black),
-                            elevation: WidgetStatePropertyAll(5),
-                          ),
-                          onPressed: () async {
+                        CommonWidgets.customButton(
+                          ontap: () async {
+                            HapticFeedback.mediumImpact();
                             setState(() {
                               isloading = true;
-                              isAnonymousTapped = false;
                             });
-
                             final userCred =
-                                await AuthService().anonymousLogin();
+                                await AuthService().signInWithGoogle();
                             if (userCred != null) {
+                              Get.offAll(Home());
                               setState(() {
                                 isloading = false;
                                 isAnonymousTapped = false;
@@ -155,66 +148,28 @@ class _AuthScreenState extends State<AuthScreen> {
                               print(
                                 "Logged in as ${userCred.user?.toString()}",
                               );
-                              Get.offAll(Home());
                             } else {
                               setState(() {
                                 isloading = false;
                               });
-                              print("Anonymous login canceled or failed");
+                              print("Google Sign-In canceled or failed");
                             }
                           },
-                          child: const Text(
-                            "Continue",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          title: "Continue with Google",
+                        ),
+                        CommonWidgets.customButton(
+                          ontap: () async {
+                            HapticFeedback.mediumImpact();
+
+                            setState(() {
+                              isAnonymousTapped = true;
+                            });
+                          },
+                          title: "Continue Anonymously",
+                          margin: 0.h,
                         ),
                       ],
                     ),
-                  ],
-                )
-                : Container(
-                  constraints: BoxConstraints(maxHeight: 20.h),
-                  child: Column(
-                    children: [
-                      CommonWidgets.customButton(
-                        ontap: () async {
-                          HapticFeedback.mediumImpact();
-                          setState(() {
-                            isloading = true;
-                          });
-                          final userCred =
-                              await AuthService().signInWithGoogle();
-                          if (userCred != null) {
-                            Get.offAll(Home());
-                            setState(() {
-                              isloading = false;
-                              isAnonymousTapped = false;
-                            });
-                            print("Logged in as ${userCred.user?.toString()}");
-                          } else {
-                            setState(() {
-                              isloading = false;
-                            });
-                            print("Google Sign-In canceled or failed");
-                          }
-                        },
-                        title: "Continue with Google",
-                      ),
-                      CommonWidgets.customButton(
-                        ontap: () async {
-                          HapticFeedback.mediumImpact();
-
-                          setState(() {
-                            isAnonymousTapped = true;
-                          });
-                        },
-                        title: "Continue Anonymously",
-                        margin: 0.h,
-                      ),
-                    ],
                   ),
                 ),
       ),

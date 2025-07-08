@@ -87,74 +87,16 @@ class DashboardScreen extends StatelessWidget {
                             text: "log Out",
                             func: () {
                               Get.dialog(
-                                Dialog(
-                                  backgroundColor: const Color.fromARGB(
-                                    209,
-                                    2,
-                                    2,
-                                    2,
-                                  ),
-                                  child: Container(
-                                    height: 30.h,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.only(top: 5.h),
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 10.w,
-                                          ),
-                                          child: Text(
-                                            textAlign: TextAlign.center,
-                                            "Are you Sure to Log out Your Account",
-                                            style: TextStyle(
-                                              fontSize: 18.sp,
-                                              fontWeight: FontWeight.bold,
-                                              color: red,
-                                            ),
-                                          ),
-                                        ),
-                                        Column(
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 20.sp,
-                                              ),
-                                              child:
-                                                  DashoardWidgets.customButton(
-                                                    ontap: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    title: "Cancle",
-                                                    margin: 0,
-                                                  ),
-                                            ),
-                                            Container(
-                                              margin: EdgeInsets.only(
-                                                top: 10.sp,
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 20.sp,
-                                              ),
-                                              child:
-                                                  DashoardWidgets.customButton(
-                                                    ontap: () {
-                                                      Navigator.pop(context);
-                                                      dashboardController
-                                                          .logOut();
-                                                    },
-                                                    title: "Log Out",
-                                                    margin: 0,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                CommonWidgets.alertDialog(
+                                  title: "Logout",
+                                  descritpion: "Are you sure to Log Out",
+                                  onCancel: () {
+                                    Navigator.pop(context);
+                                  },
+                                  onSubmit: () {
+                                    Navigator.pop(context);
+                                    dashboardController.logOut();
+                                  },
                                 ),
                               );
                             },
