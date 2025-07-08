@@ -31,7 +31,12 @@ class ChatWidgets {
             children: [
               Text(
                 title,
-                style: TextStyle(color: Colors.white, fontSize: 20.sp),
+                maxLines: 1,
+                style: TextStyle(
+                  color: Colors.white,
+                  overflow: TextOverflow.ellipsis,
+                  fontSize: 20.sp,
+                ),
               ),
               Text(descritption ?? ""),
             ],
